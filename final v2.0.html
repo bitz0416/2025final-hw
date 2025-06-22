@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Do Waht? 天氣推薦系統</title>
+  <style>
+    
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background-color: #ffffff;
+      color: #111111;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    
+    body.dark {
+      background-color: #0a0a0a; 
+      color: #d4af37; 
+    }
+
+    header {
+      background-color: #fdfdfd; 
+      color: #111111;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      transition: background-color 0.4s ease, color 0.4s ease;
+      font-weight: bold;
+    }
+
+    body.dark header {
+      background-color: #111111;
+      color: #d4af37;
+      box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+    }
+
+    main {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgb(0 0 0 / 0.1);
+      transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+      color: #111111;
+    }
+
+    body.dark main {
+      background: #121212;
+      color: #d4af37;
+      box-shadow: 0 6px 16px rgba(212,175,55,0.5);
+    }
+
+    h1 {
+      margin: 0 0 0.3rem 0;
+      font-weight: 900;
+      font-size: 2.6rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 4px #d4af37;
+    }
+
+    body.dark h1 {
+      text-shadow: 0 0 8px #ffd700;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.7rem;
+      margin-bottom: 0.6rem;
+      color: inherit;
+      text-shadow: none;
+    }
+
+    select,
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 0.8rem;
+      margin-right: 0.6rem;
+      border-radius: 8px;
+      border: 2px solid #bfa249;
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+      font-weight: 600;
+      font-family: 'Georgia', serif;
+      cursor: pointer;
+    }
+
+    select {
+      background-color: #fefefe;
+      color: #111111;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 8px #d4af37aa;
+    }
+
+    button {
+      background-color: #d4af37;
+      border: 2px solid #bfa249;
+      color: #0a0a0a;
+      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(212,175,55,0.6);
+    }
+
+    button:hover,
+    button:focus {
+      background-color: #bfa249;
+      border-color: #9a8424;
+      box-shadow: 0 0 12px #ffd700cc;
+      color: #0a0a0a;
+    }
+
+    body.dark select {
+      background-color: #222;
+      color: #d4af37;
+      border-color: #d4af37;
+    }
+
+    body.dark select:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 10px #ffd700cc;
+      color: #ffd700;
+      background-color: #1a1a1a;
+    }
+
+    body.dark button {
+      background-color: #d4af37;
+      border-color: #bfa249;
+      color: #0a0a0a;
+      box-shadow: 0 2px 10px rgba(212,175,55,0.9);
+    }
+
+    body.dark button:hover,
+    body.dark button:focus {
+      background-color: #ffd700;
+      border-color: #ffd700;
+      box-shadow: 0 0 15px #ffd700;
+      color: #111;
+    }
+
+    #result,
+    #forecast {
+      background: #f9f7f1;
+      border-radius: 10px;
+      padding: 1.2rem 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: inset 0 1px 5px rgb(189 170 63 / 0.25);
+      font-weight: 600;
+      color: #4a3e00;
+      transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    body.dark #result,
+    body.dark #forecast {
+      background: #1c1700;
+      color: #ffd700;
+      box-shadow: inset 0 1px 8px #ffd700cc;
+    }
+
+    p {
+      line-height: 1.6;
+      font-size: 1.05rem;
+      margin: 0.4rem 0;
+      text-shadow: 0 0 1px #bfa249cc;
+    }
+
+    body.dark p {
+      text-shadow: 0 0 3px #ffd700cc;
+    }
+
+    /* 右上角切換深淺色按鈕 */
+    #themeToggleContainer {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 9999;
+    }
+    #btnToggleTheme {
+      font-size: 0.9rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      border: none;
+      background-color: #d4af37;
+      color: #0a0a0a;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 7px rgba(212,175,55,0.7);
+      transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Georgia', serif;
+    }
+    #btnToggleTheme:hover {
+      background-color: #ffd700;
+      box-shadow: 0 0 15px #ffd700cc;
+      color: #111;
+    }
+    body.dark #btnToggleTheme {
+      background-color: #d4af37;
+      color: #0a0a0a;
+      box-shadow: 0 3px 10px rgba(212,175,55,0.9);
+    }
+    body.dark #btnToggleTheme:hover {
+      background-color: #ffd700;
+      box-shadow: 0 0 20px #ffd700cc;
+      color: #111;
+    }
+
+    /* 現在時間樣式 */
+    #currentTime {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-bottom: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: #4a3e00;
+      text-shadow: 0 0 2px #bfa249bb;
+      transition: color 0.4s ease, text-shadow 0.4s ease;
+      font-family: 'Georgia', serif;
+    }
+    body.dark #currentTime {
+      color: #ffd700;
+      text-shadow: 0 0 8px #ffd700cc;
+    }
+  </style>
+</head>
+<body>
+  <!-- 深淺色切換按鈕 -->
+  <div id="themeToggleContainer">
+    <button id="btnToggleTheme">切換深淺色模式</button>
+  </div>
+
+  <header>
+    <h1>GO OUT</h1>
+    <p>根據天氣推薦穿搭、美食、活動</p>
+  </header>
+  <main>
+    <div id="currentTime">載入時間中...</div>
+
+    <section>
+      <h2>選擇地區</h2>
+      <select id="city"></select>
+      <select id="town"></select>
+      <button id="btnQuery">查詢</button>
+      <button id="btnGPS">使用GPS定位</button>
+    </section>
+
+    <section id="result"></section>
+    <section id="forecast"></section>
+  </main>
+
+  <script>
+    // 台灣縣市與鄉鎮資料
+    const locationData = [
+      { city: "基隆市", towns: ["仁愛區","信義區","中正區","中山區","安樂區","暖暖區","七堵區"] },
+      { city: "臺北市", towns: ["中正區","大同區","中山區","松山區","大安區","萬華區","信義區","士林區","北投區","內湖區","南港區","文山區"] },
+      { city: "新北市", towns: ["萬里區","金山區","板橋區","汐止區","深坑區","石碇區","瑞芳區","平溪區","雙溪區","貢寮區","新店區","坪林區","烏來區","永和區","中和區","土城區","三峽區","樹林區","鶯歌區","三重區","新莊區","泰山區","林口區","蘆洲區","五股區","八里區","淡水區","三芝區","石門區"] },
+      { city: "桃園市", towns: ["中壢區","平鎮區","龍潭區","楊梅區","新屋區","觀音區","桃園區","龜山區","八德區","大溪區","復興區","大園區","蘆竹區"] },
+      { city: "臺中市", towns: ["中區","東區","南區","西區","北區","北屯區","西屯區","南屯區","太平區","大里區","霧峰區","烏日區","豐原區","后里區","石岡區","東勢區","和平區","新社區","潭子區","大雅區","神岡區","大肚區","沙鹿區","龍井區","梧棲區","清水區","大甲區","外埔區","大安區"] },
+      { city: "臺南市", towns: ["中西區","東區","南區","北區","安平區","安南區","永康區","歸仁區","新化區","左鎮區","玉井區","楠西區","南化區","仁德區","關廟區","龍崎區","官田區","麻豆區","佳里區","西港區","七股區","將軍區","學甲區","北門區","新營區","後壁區","白河區","東山區","六甲區","下營區","柳營區","鹽水區","善化區","大內區","山上區","新市區","安定區"] },
+      { city: "高雄市", towns: ["新興區","前金區","苓雅區","鹽埕區","鼓山區","旗津區","前鎮區","三民區","楠梓區","小港區","左營區","仁武區","大社區","岡山區","路竹區","阿蓮區","田寮區","燕巢區","橋頭區","梓官區","彌陀區","永安區","湖內區","鳳山區","大寮區","林園區","鳥松區","大樹區","旗山區","美濃區","六龜區","內門區","杉林區","甲仙區","桃源區","那瑪夏區","茂林區","茄萣區"] },
+      { city: "新竹市", towns: ["東區","北區","香山區"] },
+      { city: "新竹縣", towns: ["竹北市","湖口鄉","新豐鄉","新埔鎮","關西鎮","芎林鄉","寶山鄉","竹東鎮","五峰鄉","橫山鄉","尖石鄉","北埔鄉","峨眉鄉"] },
+      { city: "苗栗縣", towns: ["竹南鎮","頭份市","三灣鄉","南庄鄉","獅潭鄉","後龍鎮","通霄鎮","苑裡鎮","苗栗市","造橋鄉","頭屋鄉","公館鄉","大湖鄉","泰安鄉","銅鑼鄉","三義鄉","西湖鄉","卓蘭鎮"] },
+      { city: "彰化縣", towns: ["彰化市","芬園鄉","花壇鄉","秀水鄉","鹿港鎮","福興鄉","線西鄉","和美鎮","伸港鄉","員林市","社頭鄉","永靖鄉","埔心鄉","溪湖鎮","大村鄉","埔鹽鄉","田中鎮","北斗鎮","田尾鄉","埤頭鄉","溪州鄉","竹塘鄉","二林鎮","大城鄉","芳苑鄉","二水鄉"] },
+      { city: "南投縣", towns: ["南投市","中寮鄉","草屯鎮","國姓鄉","埔里鎮","仁愛鄉","名間鄉","集集鎮","水里鄉","魚池鄉","信義鄉","竹山鎮","鹿谷鄉"] },
+      { city: "雲林縣", towns: ["斗六市","林內鄉","古坑鄉","莿桐鄉","西螺鎮","二崙鄉","崙背鄉","麥寮鄉","東勢鄉","臺西鄉","元長鄉","四湖鄉","口湖鄉","水林鄉"] },
+      { city: "嘉義市", towns: ["東區","西區"] },
+      { city: "嘉義縣", towns: ["番路鄉","梅山鄉","竹崎鄉","阿里山鄉","中埔鄉","大埔鄉","水上鄉","鹿草鄉","太保市","朴子市","東石鄉","義竹鄉","布袋鎮"] },
+      { city: "臺東縣", towns: ["臺東市","綠島鄉","蘭嶼鄉","延平鄉","卑南鄉","鹿野鄉","關山鎮","海端鄉","池上鄉","東河鄉","成功鎮","長濱鄉","太麻里鄉","金峰鄉","大武鄉","達仁鄉"] },
+      { city: "花蓮縣", towns: ["花蓮市","新城鄉","秀林鄉","吉安鄉","壽豐鄉","鳳林鎮","光復鄉","豐濱鄉","瑞穗鄉","萬榮鄉","玉里鎮","卓溪鄉","富里鄉"] },
+      { city: "澎湖縣", towns: ["馬公市","西嶼鄉","望安鄉","七美鄉","白沙鄉","湖西鄉"] },
+      { city: "金門縣", towns: ["金沙鎮","金湖鎮","金寧鄉","金城鎮","烈嶼鄉","烏坵鄉"] },
+      { city: "連江縣", towns: ["南竿鄉","北竿鄉","莒光鄉","東引鄉"] }
+    ];
+
+    // 載入縣市鄉鎮選單
+    function loadAreaData() {
+      const citySelect = document.getElementById("city");
+      const townSelect = document.getElementById("town");
+
+      citySelect.innerHTML = '<option value="">請選擇縣市</option>';
+      locationData.forEach((loc) => {
+        const opt = document.createElement("option");
+        opt.value = loc.city;
+        opt.textContent = loc.city;
+        citySelect.appendChild(opt);
+      });
+
+      citySelect.addEventListener("change", () => {
+        const selected = locationData.find((l) => l.city === citySelect.value);
+        townSelect.innerHTML = '<option value="">請選擇鄉鎮</option>';
+        if (selected) {
+          selected.towns.forEach((town) => {
+            const opt = document.createElement("option");
+            opt.value = town;
+            opt.textContent = town;
+            townSelect.appendChild(opt);
+          });
+        }
+      });
+    }
+
+    // 使用 GPS 定位並反查地址
+    async function getLocation() {
+      if (!navigator.geolocation) {
+        alert("您的瀏覽器不支援GPS定位");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const json = await res.json();
+          const county = json.address.county || json.address.city;
+          const town =
+            json.address.town || json.address.village || json.address.suburb || "";
+
+          // 設定選單選擇值
+          const citySelect = document.getElementById("city");
+          const townSelect = document.getElementById("town");
+          citySelect.value = county;
+          citySelect.dispatchEvent(new Event("change"));
+
+          setTimeout(() => {
+            townSelect.value = town;
+          }, 300);
+        } catch {
+          alert("定位失敗，無法反查地址");
+        }
+      });
+    }
+
+    // 取得天氣資料並顯示建議
+    async function getWeather() {
+      const city = document.getElementById("city").value;
+      const town = document.getElementById("town").value;
+      if (!city) {
+        alert("請先選擇縣市");
+        return;
+      }
+
+      const result = document.getElementById("result");
+      const forecast = document.getElementById("forecast");
+
+      result.innerHTML = forecast.innerHTML = "載入中...";
+
+      try {
+        const res = await fetch(
+          `https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-B25B8495-0958-48BC-8DC3-E11DDBA0AE26&locationName=${city}`
+        );
+        const data = await res.json();
+
+        if (!data.records || data.records.location.length === 0) {
+          result.innerHTML = "找不到天氣資料，請確認選擇的縣市名稱";
+          forecast.innerHTML = "";
+          return;
+        }
+
+        const loc = data.records.location.find((l) => l.locationName === city) || data.records.location[0];
+
+        const weather = loc.weatherElement[0].time[0].parameter.parameterName;
+        const rain = loc.weatherElement[1].time[0].parameter.parameterName;
+        const tempMin = loc.weatherElement[2].time[0].parameter.parameterName;
+        const tempMax = loc.weatherElement[4].time[0].parameter.parameterName;
+
+        let activity = "";
+        if (weather.includes("雨")) activity = "☔ 建議在家看 Netflix 或閱讀書籍";
+        else if (weather.includes("晴"))
+          activity = "☀️ 可以去海邊、打籃球、跑步";
+        else activity = "☁️ 室內外活動皆可";
+
+        if (["花蓮縣", "臺東縣", "高雄市", "澎湖縣"].some((k) => city.includes(k)))
+          activity += "，靠海建議去看海、吃海鮮";
+        if (["南投縣", "苗栗縣", "新竹縣", "嘉義縣"].some((k) => city.includes(k)))
+          activity += "，靠山可去騎車、爬山";
+
+        result.innerHTML = `
+          <h3>${city} ${town} 天氣建議</h3>
+          <p>🌤️ 狀況：${weather}</p>
+          <p>🌡️ 溫度：${tempMin} ~ ${tempMax}°C</p>
+          <p>💧 降雨率：${rain}%</p>
+          <p>🎯 活動建議：${activity}</p>
+        `;
+
+        forecast.innerHTML =
+          `<h4>📅 未來預報</h4>` +
+          loc.weatherElement[0].time
+            .slice(0, 3)
+            .map(
+              (t) =>
+                `<p>${t.startTime
+                  .split(" ")[1]
+                  .slice(0, 5)} - ${t.parameter.parameterName}</p>`
+            )
+            .join("");
+      } catch (e) {
+        console.error(e);
+        result.innerHTML = "取得天氣資料失敗";
+        forecast.innerHTML = "";
+      }
+    }
+
+    // 現在時間顯示
+    function updateTime() {
+      const now = new Date();
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const w = weekdays[now.getDay()];
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const timeStr = `${w} ${hh}:${mm}:${ss} ${month}月${day}日`;
+      document.getElementById('currentTime').textContent = timeStr;
+    }
+
+    // 深淺色模式切換
+    const btnToggleTheme = document.getElementById('btnToggleTheme');
+    btnToggleTheme.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    window.onload = () => {
+      loadAreaData();
+      document.getElementById("btnQuery").onclick = getWeather;
+      document.getElementById("btnGPS").onclick = getLocation;
+      updateTime();
+      setInterval(updateTime, 1000);
+    };
+  </script>
+</body>
+</html>
